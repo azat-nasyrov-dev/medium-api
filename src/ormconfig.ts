@@ -7,6 +7,8 @@ const config: PostgresConnectionOptions = {
   username: 'postgres',
   password: 'tatarin',
   database: 'medium-api',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
 };
 
 export default config;
