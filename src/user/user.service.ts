@@ -6,7 +6,12 @@ import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
-import { EMAIL_OR_USERNAME_ERROR } from '@app/user/user.constants';
+import {
+  EMAIL_OR_USERNAME_ERROR,
+  USER_CREDENTIALS_ERROR,
+} from '@app/user/user.constants';
+import { LoginUserDto } from '@app/user/dto/login.dto';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -34,6 +39,38 @@ export class UserService {
     Object.assign(newUser, createUserDto);
     console.log('newUser', newUser);
     return await this.userRepository.save(newUser);
+  }
+
+  async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: loginUserDto.email,
+      },
+      select: ['id', 'username', 'email', 'bio', 'image', 'password'],
+    });
+
+    if (!user) {
+      throw new HttpException(
+        USER_CREDENTIALS_ERROR,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const isPasswordCorrect = await compare(
+      loginUserDto.password,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+      throw new HttpException(
+        USER_CREDENTIALS_ERROR,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    delete user.password;
+
+    return user;
   }
 
   generateJwt(user: UserEntity): string {
