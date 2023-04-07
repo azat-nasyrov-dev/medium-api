@@ -6,10 +6,6 @@ import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
-import {
-  EMAIL_OR_USERNAME_ERROR,
-  USER_CREDENTIALS_ERROR,
-} from '@app/user/user.constants';
 import { LoginUserDto } from '@app/user/dto/login.dto';
 import { compare } from 'bcrypt';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
