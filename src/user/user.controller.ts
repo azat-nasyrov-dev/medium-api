@@ -16,11 +16,15 @@ import { UserEntity } from '@app/user/user.entity';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiOperation({ summary: 'Creating a user' })
+  @ApiResponse({ status: 201, type: UserEntity })
   @Post('users')
   @UsePipes(new BackendValidationPipe())
   async createUser(
@@ -30,6 +34,8 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
+  @ApiOperation({ summary: 'User login' })
+  @ApiResponse({ status: 200, type: UserEntity })
   @Post('users/login')
   @UsePipes(new BackendValidationPipe())
   async login(
@@ -39,12 +45,16 @@ export class UserController {
     return this.userService.buildUserResponse(user);
   }
 
+  @ApiOperation({ summary: 'Getting the current user' })
+  @ApiResponse({ status: 200, type: UserEntity })
   @Get('user')
   @UseGuards(AuthGuard)
   async currentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
     return this.userService.buildUserResponse(user);
   }
 
+  @ApiOperation({ summary: 'Update the current user' })
+  @ApiResponse({ status: 200, type: UserEntity })
   @Put('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(

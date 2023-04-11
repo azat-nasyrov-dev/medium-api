@@ -19,11 +19,16 @@ import { ArticleResponseInterface } from '@app/article/types/articleResponse.int
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { ArticlesResponseInterface } from '@app/article/types/articlesResponse.interface';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ArticleEntity } from '@app/article/article.entity';
 
+@ApiTags('Articles')
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
+  @ApiOperation({ summary: 'Get all articles' })
+  @ApiResponse({ status: 200, type: [ArticleEntity] })
   @Get()
   async findAll(
     @User('id') currentUserId: number,
@@ -32,6 +37,8 @@ export class ArticleController {
     return await this.articleService.findAll(currentUserId, query);
   }
 
+  @ApiOperation({ summary: 'Getting an article with a count' })
+  @ApiResponse({ status: 200, type: ArticleEntity })
   @Get('feed')
   @UseGuards(AuthGuard)
   async getFeed(
@@ -41,6 +48,8 @@ export class ArticleController {
     return await this.articleService.getFeed(currentUserId, query);
   }
 
+  @ApiOperation({ summary: 'Article creation' })
+  @ApiResponse({ status: 201, type: ArticleEntity })
   @Post()
   @UseGuards(AuthGuard)
   @UsePipes(new BackendValidationPipe())
@@ -55,6 +64,8 @@ export class ArticleController {
     return this.articleService.buildArticleResponse(article);
   }
 
+  @ApiOperation({ summary: 'Getting one article' })
+  @ApiResponse({ status: 200, type: ArticleEntity })
   @Get(':slug')
   async getSingleArticle(
     @Param('slug') slug: string,
@@ -63,6 +74,8 @@ export class ArticleController {
     return this.articleService.buildArticleResponse(article);
   }
 
+  @ApiOperation({ summary: 'Deleting an article' })
+  @ApiResponse({ status: 200, type: ArticleEntity })
   @Delete(':slug')
   @UseGuards(AuthGuard)
   async deleteArticle(
@@ -72,6 +85,8 @@ export class ArticleController {
     return await this.articleService.deleteArticle(slug, currentUserId);
   }
 
+  @ApiOperation({ summary: 'Article update' })
+  @ApiResponse({ status: 200, type: ArticleEntity })
   @Put(':slug')
   @UseGuards(AuthGuard)
   @UsePipes(new BackendValidationPipe())
@@ -88,6 +103,8 @@ export class ArticleController {
     return this.articleService.buildArticleResponse(article);
   }
 
+  @ApiOperation({ summary: 'Adding an article to favorites' })
+  @ApiResponse({ status: 201, type: ArticleEntity })
   @Post(':slug/favorite')
   @UseGuards(AuthGuard)
   async addArticleToFavorites(
@@ -101,6 +118,8 @@ export class ArticleController {
     return this.articleService.buildArticleResponse(article);
   }
 
+  @ApiOperation({ summary: 'Remove article from favorites' })
+  @ApiResponse({ status: 200, type: ArticleEntity })
   @Delete(':slug/favorite')
   @UseGuards(AuthGuard)
   async deleteArticleFromFavorites(
